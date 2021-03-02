@@ -251,9 +251,11 @@ app.post('/bankdetails' ,function(req,res){
 })
 
 // server
+var port = process.env.PORT || 3000;
 const start = async () => {
     try {
-      await app.listen(process.env.PORT)
+      await app.listen(port, function(){
+      console.log('App running on ${port} port')})
     } catch (err) {
       app.log.error(err)
       process.exit(1)
