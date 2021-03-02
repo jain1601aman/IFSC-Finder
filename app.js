@@ -255,7 +255,7 @@ var port = process.env.PORT || 3000;
 const start = async () => {
     try {
       await app.listen(port, function(){
-      console.log('App running on ${port} port')})
+      console.log('App running on %d port',port)})
     } catch (err) {
       app.log.error(err)
       process.exit(1)
