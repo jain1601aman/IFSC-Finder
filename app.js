@@ -211,7 +211,7 @@ app.post('/bankdetails' ,function(req,res){
 // server
 const start = async () => {
     try {
-      await app.listen(3000)
+      await app.listen(process.env.PORT , '0.0.0.0');
     } catch (err) {
       app.log.error(err)
       process.exit(1)
