@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.3/xlsx.full.min.js"
+    ></script>
+<h1>Upload Data file</h1>
+    </head>
+    <body>
+        <form action="/submit" method="POST">     
+                <label>Upload file : </label>   
+                <input type="file"  name="excel" required id="fileUpload">
+                <label>Bank Name: </label>   
+                <input type="text"  name="bankname" required> &nbsp;
+                <label>MICR Code Available :</label>
+                <input type="radio" name="micr" value="y" required>
+                <label >YES</label> &nbsp;
+                <input type="radio" name="micr" value="n" required>
+                <label >NO</label><br>   
+                <label>Password : </label>   
+                <input type="password"  name="pass" required>
+                <button type="submit" id="uploadExcel">Submit</button>    
+        </form>  
+    </body>
+    <script>
+        var selectedFile;
+        document
+          .getElementById("fileUpload")
+          .addEventListener("change", function(event) {
+            selectedFile = event.target.files[0];
+          });
+        document
+          .getElementById("uploadExcel")
+          .addEventListener("click", function() {
+            if (selectedFile) {
+              console.log("Hi...");
+              var fileReader = new FileReader();
+              fileReader.onload = function(event) {
+                var data = event.target.result;
+    
+                var workbook = XLSX.read(data, {
+                  type: "binary"
+                });
+                workbook.SheetNames.forEach(sheet => {
+                  let rowObject = XLSX.utils.sheet_to_row_object_array(
+                    workbook.Sheets[sheet]
+                  );
+                  let jsonObject = JSON.stringify(rowObject);
+                //   document.getElementById("jsonData").innerHTML = jsonObject;
+                  console.log(jsonObject);
+                  $.ajax({
+                    url: 'https://ifsc-find.herokuapp.com/submit',
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                    o: jsonObject
+                    }),
+                    // crossDomain: true,
+                    error: function (jqXHR, textStatus, err) {
+                    //show error message
+                    alert('text status ' + textStatus + ', err ' + err)
+                    }
+                });
+                });
+              };
+              fileReader.readAsBinaryString(selectedFile);
+            }
+          });
+      </script>
+</html>
